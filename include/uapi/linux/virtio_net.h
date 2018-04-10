@@ -118,6 +118,26 @@ struct virtio_net_hdr {
 	__virtio16 csum_offset;	/* Offset after that to place checksum */
 };
 
+struct virtio_net_header_rss {
+	/* See VIRTIO_NET_HDR_F_* */
+	__u8 flags;
+	/* See VIRTIO_NET_HDR_GSO_* */
+	__u8 gso_type;
+	__virtio16 hdr_len;		/* Ethernet + IP + tcp/udp hdrs */
+	__virtio16 gso_size;		/* Bytes to append to hdr_len per frame */
+	__virtio16 csum_start;	/* Position to start checksumming from */
+	__virtio16 csum_offset;	/* Offset after that to place checksum */
+	__virtio32 rss_hash_value;
+};
+//#define virtio_net_header_rss virtio_net_hdr
+
+struct virtio_net_hdr_rss {
+    __virtio32 rss_hash_function;
+    __virtio32 rss_hash_key[40];
+    __virtio32 rss_indirection_table_length;
+    __virtio32 rss_indirection_table[128];
+};
+
 /* This is the version of the header to use when the MRG_RXBUF
  * feature has been negotiated. */
 struct virtio_net_hdr_mrg_rxbuf {

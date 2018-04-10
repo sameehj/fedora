@@ -983,6 +983,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
 	struct ifreq __user *ifr = argp;
 	unsigned int __user *up = argp;
 	unsigned short u;
+	struct virtio_net_hdr_rss rss_config;
 	int __user *sp = argp;
 	struct sockaddr sa;
 	int s;
@@ -1116,6 +1117,13 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
 		tap_put_tap_dev(tap);
 		rtnl_unlock();
 		return ret;
+
+
+	case TUNSETRSS:
+		if (copy_from_user(&rss_config, &ifr->ifr_ifru.ifru_data, sizeof(rss_config)))
+			return -EFAULT;
+		return ret;
+
 
 	default:
 		return -EINVAL;
