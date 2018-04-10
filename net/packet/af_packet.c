@@ -2040,7 +2040,7 @@ static unsigned int run_filter(struct sk_buff *skb,
 static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
 			   size_t *len)
 {
-	struct virtio_net_hdr vnet_hdr;
+struct virtio_net_header_rss vnet_hdr;
 
 	if (*len < sizeof(vnet_hdr))
 		return -EINVAL;
@@ -2249,7 +2249,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 				       (maclen < 16 ? 16 : maclen)) +
 				       po->tp_reserve;
 		if (po->has_vnet_hdr) {
-			netoff += sizeof(struct virtio_net_hdr);
+			netoff += sizeof(struct virtio_net_header_rss);
 			do_vnet = true;
 		}
 		macoff = netoff - maclen;
@@ -2312,7 +2312,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	if (do_vnet) {
 		if (virtio_net_hdr_from_skb(skb, h.raw + macoff -
-					    sizeof(struct virtio_net_hdr),
+					    sizeof(struct virtio_net_header_rss),
 					    vio_le(), true)) {
 			spin_lock(&sk->sk_receive_queue.lock);
 			goto drop_n_account;
@@ -2454,7 +2454,7 @@ static void tpacket_set_protocol(const struct net_device *dev,
 	}
 }
 
-static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+static int __packet_snd_vnet_parse(struct virtio_net_header_rss *vnet_hdr, size_t len)
 {
 	if ((vnet_hdr->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) &&
 	    (__virtio16_to_cpu(vio_le(), vnet_hdr->csum_start) +
@@ -2471,7 +2471,7 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
 }
 
 static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
-				 struct virtio_net_hdr *vnet_hdr)
+				 struct virtio_net_header_rss *vnet_hdr)
 {
 	if (*len < sizeof(*vnet_hdr))
 		return -EINVAL;
@@ -2636,7 +2636,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
 {
 	struct sk_buff *skb;
 	struct net_device *dev;
-	struct virtio_net_hdr *vnet_hdr = NULL;
+	struct virtio_net_header_rss *vnet_hdr = NULL;
 	struct sockcm_cookie sockc;
 	__be16 proto;
 	int err, reserve = 0;
@@ -2839,7 +2839,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
 	unsigned char *addr;
 	int err, reserve = 0;
 	struct sockcm_cookie sockc;
-	struct virtio_net_hdr vnet_hdr = { 0 };
+	struct virtio_net_header_rss vnet_hdr = { 0 };
 	int offset = 0;
 	struct packet_sock *po = pkt_sk(sk);
 	bool has_vnet_hdr = false;
