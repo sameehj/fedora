@@ -116,6 +116,7 @@ struct virtio_net_hdr {
 	__virtio16 gso_size;		/* Bytes to append to hdr_len per frame */
 	__virtio16 csum_start;	/* Position to start checksumming from */
 	__virtio16 csum_offset;	/* Offset after that to place checksum */
+	__virtio32 rss_hash_value;
 };
 
 struct virtio_net_header_rss {

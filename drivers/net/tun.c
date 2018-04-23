@@ -2038,6 +2038,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 	unsigned int ifindex;
 	int le;
 	int ret;
+	struct virtio_net_hdr_rss rss_config;
 
 	if (cmd == TUNSETIFF || cmd == TUNSETQUEUE || _IOC_TYPE(cmd) == SOCK_IOC_TYPE) {
 		if (copy_from_user(&ifr, argp, ifreq_len))
@@ -2295,6 +2296,11 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 			break;
 		ret = 0;
 		break;
+	case TUNSETRSS:
+		printk("tun ictl: SETRSS");
+		if (copy_from_user(&rss_config, &ifr.ifr_ifru.ifru_data, sizeof(rss_config)))
+			return -EFAULT;
+		ret = 0;
 
 	default:
 		ret = -EINVAL;
